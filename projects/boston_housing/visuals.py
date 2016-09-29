@@ -85,7 +85,7 @@ def ModelComplexity(X, y):
 
     # Plot the validation curve
     pl.figure(figsize=(7, 5))
-    pl.title('Decision Tree Regressor Complexity Performance')
+    pl.title('Decision Tree Regressor Complexity Performance, %f'%max(test_mean))
     pl.plot(max_depth, train_mean, 'o-', color = 'r', label = 'Training Score')
     pl.plot(max_depth, test_mean, 'o-', color = 'g', label = 'Validation Score')
     pl.fill_between(max_depth, train_mean - train_std, \
