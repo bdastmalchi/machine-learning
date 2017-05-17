@@ -1,5 +1,6 @@
 import random
 import math
+import time
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
@@ -23,7 +24,8 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.tolerance = 0.05
+        self.tolerance = 0.97
+        self.t0 = time.time()
 
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
@@ -43,7 +45,18 @@ class LearningAgent(Agent):
             self.epsilon = 0
             self.alpha = 0
         else:
-            self.epsilon -= self.epsilon *  self.tolerance
+            t = (time.time() - self.t0)
+            #self.epsilon -= self.epsilon *  self.tolerance
+            #self.epsilon -= self.tolerance
+            #self.epsilon = 1 / t**2
+            self.epsilon = self.tolerance**t
+            #self.epsilon = math.cos(self.tolerance * t)
+
+            # =============================
+            # Good values
+            #self.tolerance = 0.01
+            #alpha=0.4
+            #self.epsilon = math.exp(-self.tolerance * t)
 
         return None
 
@@ -65,7 +78,7 @@ class LearningAgent(Agent):
         # since the state will be used as a key for a dictionary, it must be an
         # immutable type, therefor, the inputs entry is converted to string type
         #state = self.agent.agent_states[agent]
-        state = (waypoint, str(inputs))
+        state = (str(inputs))
 
         return state
 
@@ -187,7 +200,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 0.01, log_metrics=True)
+    sim = Simulator(env, update_delay = 0.01, log_metrics=True, optimized=True)
 
     ##############
     # Run the simulator
