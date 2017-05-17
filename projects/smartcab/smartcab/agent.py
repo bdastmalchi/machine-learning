@@ -78,7 +78,7 @@ class LearningAgent(Agent):
         # since the state will be used as a key for a dictionary, it must be an
         # immutable type, therefor, the inputs entry is converted to string type
         #state = self.agent.agent_states[agent]
-        state = (str(inputs))
+        state = (waypoint, str(inputs))
 
         return state
 
