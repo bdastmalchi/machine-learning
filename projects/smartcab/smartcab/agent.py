@@ -24,7 +24,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.tolerance = 0.97
+        self.tolerance = 0.99
         self.t0 = time.time()
 
     def reset(self, destination=None, testing=False):
