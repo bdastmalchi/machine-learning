@@ -24,7 +24,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.tolerance = 0.99
+        self.tolerance = 0.98
         self.t0 = time.time()
 
     def reset(self, destination=None, testing=False):
@@ -208,7 +208,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 0.01, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay = 0.01, log_metrics=True, optimized=True, display=True)
 
     ##############
     # Run the simulator
