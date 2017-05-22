@@ -11872,7 +11872,18 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong><br>
-The state is not updated, therefor the smartcab does not move during the simulation. However, due to being idle at a traffic light, the agent receives positive/negative rewards for stoping at red/green light.</p>
+The state is not updated, therefor the smartcab does not move during the simulation. However, the agent receives positive/negative rewards for idling at red/green light.</p>
+<p><strong>Some notes on the grid world</strong></p>
+<ul>
+<li>The world is constituted of an 8$\times$6 grid of intersections, traffic lights with two possible state of red and green, one primary agent, and 100 dummy agents randomly positioned over the grid. The grid is periodic, meaning that if an agent exits from one side, re-enters the grid from the opposite side. </li>
+<li>Start and destination of the primary agent are set randomly for each trial and the code makes sure that the distance between them is not less than 4 (lines 120-126 @ <em><code>environment.py</code></em>)</li>
+<li>There are two types of time limits:<ul>
+<li>A deadline of 5 time steps per intersection (lines 129-130 @ <em><code>environment.py</code></em>)</li>
+<li>A hard time limit, set to -100 in case there is no deadline enforced (line 33 @ <em><code>environment.py</code></em>)</li>
+</ul>
+</li>
+</ul>
+<p><img src="GridWorld.png"></p>
 
 </div>
 </div>
@@ -11917,9 +11928,9 @@ set to True to force the driving agent to use Q-learning  </li>
 <li><strong>update_delay</strong>:
 continuous time (in seconds) between actions, default is 2.0 seconds  </li>
 </ul>
-<p>2- In the <em><code>environment.py</code></em> <strong>act</strong> function is called when an agent performs an action:<br>
+<p>2- In the <em><code>environment.py</code></em>, the <strong><code>act</code></strong> function is called when an agent performs an action:<br>
       <code>def act(self, agent, action):</code></p>
-<p>3- In the <em><code>simulator.py</code></em>, <em><code>'render_text()'</code></em> is the non-GUI render display of the simulation, whearas, <em><code>'render()'</code></em> is the GUI render display of the simulation.</p>
+<p>3- In the <em><code>simulator.py</code></em>, <em><code>'render_text()'</code></em> is the non-GUI render display of the simulation, whereas, <em><code>'render()'</code></em> is the GUI render display of the simulation.</p>
 <p>4- In the <em><code>planner.py</code></em>, the <em><code>'next_waypoint()</code></em> function will first consider the East-West direction first.</p>
 
 </div>
@@ -13134,8 +13145,8 @@ RK5CYII=
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li>By looking at the top left graph which illustrates relative frequency of bad events, almost %40 of the decisions made by the agent lead to some kind of trafic violation (dashed black). Something around %5 of those violations are constituted by minor accidents (dashed red) and around %10 by major accidents (solid red).  </li>
-<li>Reliability fluctuates around %20 with no dramatic change in its trend. This would make sense since the agent is not learning and the rate should remain almost steady in time.  </li>
+<li>Top left graph illustrates relative frequency of bad actions. Almost %40 of the decisions made by the agent lead to some kind of traffic violation (dashed black). Nearly %5 of those violations are constituted by minor accidents (dashed red) and around %10 by major accidents (solid red).  </li>
+<li>Reliability fluctuates around %20 with no dramatic changes in trend. This would make sense since the agent is not learning and the rate should remain almost steady in time.  </li>
 <li>From the <em><code>environment.py</code></em>, penalties for minor violations, major violations, minor accidents, and major accidents are -5, -10, -20, and -40, respectively, while, there is only a small reward of 2 for correct actions. According to the top right plot, the agent's 10 trial rolling average reward remains around -6. Considering that almost %40 of the actions lead to a type of violation and the minimum penalty is -5, I would say that the agent is only mildly penalized.  </li>
 <li>The result do not seem to be considerably changing as the number of trials increase.  </li>
 <li>According to the Safety/Reliability score of F/F given to this specific smartcab, which is the minimum score possible, it can neither be considered safe nor reliable.</li>
@@ -13194,17 +13205,13 @@ RK5CYII=
 <p><strong>Answer:</strong></p>
 <p><strong>inputs</strong> and <strong>waypoint</strong> are chosen for the following reasons:</p>
 <h4 id="Chosen-features:">Chosen features:<a class="anchor-link" href="#Chosen-features:">&#182;</a></h4><ul>
-<li><p><strong>inputs</strong>: Providing <strong>inputs</strong> as a feature would enable the algorithm to relate rewards/punishments for actions to the information comming from environment, such as traffic lights and crossing traffic. This would help the smartcab to improve its safety.</p>
+<li><p><strong>inputs</strong> are the sensory information, such as traffic lights and crossing traffic, collected from the environment.  Allowing the algorithm to relate the environmental data to the reward/punishment per actions it takes would help the smartcab to improve its safety.</p>
 </li>
-<li><p><strong>waypoint</strong>: By learning to follow <strong>waypoints</strong> the smartcab would be able to better meet deadlines and consequently improve its reliablility/efficiency.</p>
+<li><p><strong>waypoint</strong>: By learning to follow <strong>waypoints</strong> the smartcab would be able to better meet deadlines and consequently improve its reliability/efficiency.</p>
 </li>
 </ul>
 <h4 id="Not-chosen-features:">Not-chosen features:<a class="anchor-link" href="#Not-chosen-features:">&#182;</a></h4><ul>
-<li><strong>deadline</strong> would not be a good choice as a feature for two reasons:  <ul>
-<li>Unlike the <strong>waypoint</strong>, the value of <strong>deadline</strong> by itself does not provide any meaningful information for the agent to optimize the driving path. </li>
-<li>It has an integer value in the range of [-100, 0]. This would make the feature space very large and impede the learning process, unless it is transformed to some simpler form.</li>
-</ul>
-</li>
+<li><strong>deadline</strong>: Has an integer value of 5$\times$distance. Unlike the <strong>waypoint</strong>, it does not provide any meaningful information about the destination for the agent to adjust its orientation.</li>
 </ul>
 
 </div>
@@ -13239,7 +13246,7 @@ RK5CYII=
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>The <strong>inputs</strong> feature containes <strong>light</strong> with two possible values (red and green), <strong>left</strong>, <strong>right</strong> and <strong>oncoming</strong> traffic, with four possible values each (left, right forward and empty), and finally, <strong>waypoint</strong> that takes three value. These together leave us with 384 possible states. However, if we add the grid size ($8\times6$) to this, we end up with 18432 states.</p>
+<p>The <strong>inputs</strong> feature contains <strong>light</strong> with two possible values (red and green), <strong>left</strong>, <strong>right</strong> and <strong>oncoming</strong> traffic, with four possible values each (left, right forward and empty), and finally, <strong>waypoint</strong> that takes three value. These together leave us with 384 possible states. However, if we add the grid size ($8\times6$) to this, we end up with 18432 states.</p>
 
 </div>
 </div>
@@ -14531,7 +14538,7 @@ YII=
 <li>The results seem to be slightly different than the basic agent simulations. In one simulation, depicted in the figures above, all violations, except major accidents, show a declining trend. Average reward and the rate of reliability start to increase from trial number 16, where the major accidents curve also changes its trend downwards.</li>
 <li>Twenty training trials were required before the agent started testing.  </li>
 <li>Yes, it is a straight line with the right intercepts, correctly representing $\epsilon_{t+1}=\epsilon_{t}-0.05$.  </li>
-<li>All types of violations decrease as the number of trials increase. Relative frequency of the major accidents however has an upward trend until the trial numbe 16, then it changes the course to slightly decrease as the number of trials increase.</li>
+<li>All types of violations decrease as the number of trials increase. Relative frequency of the major accidents however has an upward trend until the trial number 16, then it changes the course to slightly decrease as the number of trials increase.</li>
 <li>The safety and the reliability ratings are similar to the basic driving agent, since the number of training trials are not enough for the agent to learn the safety and reliability rules.</li>
 </ul>
 
@@ -21864,7 +21871,7 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 </tbody>
 </table>
 <ul>
-<li>$\epsilon$ tolerance defines the rate and shape of the decay function. The faster the decay the smaller the number of training trials. By tuning $\epsilon$ so that enough training trials are executed one can guarantee the algorithm to achieve a satisfactory safety rating. The ocasional drop in one of the ratings can possibaly fixed by increasing the number of training trials in epense of longer run-time as a trade-off.</li>
+<li>$\epsilon$ tolerance defines the rate and shape of the decay function. The faster the decay the smaller the number of training trials. By tuning $\epsilon$ so that enough training trials are executed one can guarantee the algorithm to achieve a satisfactory safety rating. The occasional drop in one of the ratings can possibly fixed by increasing the number of training trials in expense of longer run-time as a trade-off.</li>
 <li>The optimization raised Safety/Reliability ratings from C/F to A+/A+.  </li>
 <li>Based on the Safety/Reliability score that are achieved, I am convinced that the agent successfully learned an appropriate policy.  </li>
 <li>I consider the results satisfactory at this point.</li>
@@ -21900,11 +21907,11 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li>A policy is a set of rules that the agent follows to select an action, given its state. An optimal policy would define a set of state-action pairs that maximize the rewards recieved by the agent. </li>
+<li>A policy is a set of rules that the agent follows to select an action, given its state. An optimal policy would define a set of state-action pairs that maximize the rewards received by the agent. </li>
 <li>The problem we are trying to address here is having an agent learn the US right of ways, so that it can achieve certain levels of safety and efficiency to drive a smartcab. A few examples of various situations that a smartcab would face, and the correct actions that it should take come in the following<br>
 1- The waypoint is forward, the light is red: the optimal action would be staying idle.<br>
-2- The waypoint is left, light is green, and the oncoming trafic is none: the optimal action would be following the waypoint.<br>
-3- The waypoint is left, the light is green, however the oncoming trafic is 'forward': the optimal action would be idle.  </li>
+2- The waypoint is left, light is green, and the oncoming traffic is none: the optimal action would be following the waypoint.<br>
+3- The waypoint is left, the light is green, however the oncoming traffic is 'forward': the optimal action would be idle.  </li>
 </ul>
 <p>Here is what the agent has learned after a successful, A+/A+, training:</p>
 <p>('forward', "{'light': 'red', 'oncoming': None, 'right': 'right', 'left': 'left'}")<br>
@@ -21967,7 +21974,7 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 <ul>
 <li><p>The agent is trying to learn traffic rules, while maximizing it's reliability by following the waypoints. Inclusion of future rewards would mean that the future optimal actions of the agent would have an impact on its current Q-value. With regard to <strong>reliability</strong> this may make sense, because, if the agent choses to take optimal paths in its future actions, it may be able to compensate a wrong turn at current time. However, with regard to <strong>safety</strong>, future actions must not matter for rewarding or penalizing the current action of the agent. In other words, <strong>current violation of a traffic law can not be excused or discounted by the promiss of possible safe driving in future.</strong> This may justify setting the discount factor the future rewards to zero.</p>
 </li>
-<li><p>With respect to the environment, the start and the destination of the agent is chosen randomly for each trial, meaning that the environment is time dependent, hence, following certain set of waypoints that yield high rewards for one trial, may not lead to the same result at a different trial, and would not be benificial to learn reliability.</p>
+<li><p>With respect to the environment, the start and the destination of the agent is chosen randomly for each trial, meaning that the environment is time dependent, hence, following certain set of waypoints that yield high rewards for one trial, may not lead to the same result at a different trial, and would not be beneficial to learn reliability.</p>
 </li>
 </ul>
 
@@ -21985,54 +21992,6 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notes">Notes<a class="anchor-link" href="#Notes">&#182;</a></h1><h3 id="Start-and-Destination:">Start and Destination:<a class="anchor-link" href="#Start-and-Destination:">&#182;</a></h3><p>lines 120-126 @ <em><code>environment.py</code></em></p>
-<ul>
-<li>Start and destination are chosen randomly for each trial and the code makes sure that the distance between them is not less than 4</li>
-</ul>
-<h3 id="Deadline:">Deadline:<a class="anchor-link" href="#Deadline:">&#182;</a></h3><p>lines 129-130 @ <em><code>environment.py</code></em></p>
-<ul>
-<li>After calculating the distance between the start and the destination, a deadline of 5 time steps per intersection is assigned</li>
-</ul>
-<h3 id="Safety-Scoring:">Safety Scoring:<a class="anchor-link" href="#Safety-Scoring:">&#182;</a></h3><p>lines 26-40 @ <em><code>visuals.py</code></em></p>
-<ul>
-<li>A+: No violation   </li>
-<li>A: Minor violations less than %50 of the testing trials</li>
-<li>B:  Minor violations more than %50 of the testing trials</li>
-<li>C: Any major violations</li>
-<li>D: Any minor Accidents</li>
-<li>F: Any major accidents</li>
-</ul>
-<h3 id="Reliability-scoring:">Reliability scoring:<a class="anchor-link" href="#Reliability-scoring:">&#182;</a></h3><p>lines 48-60 @ <em><code>visuals.py</code></em></p>
-<ul>
-<li>A+: %100 Success ratio</li>
-<li>A: &gt;= %90 Success ratio</li>
-<li>B: &gt;= %80 Success ratio</li>
-<li>C: &gt;= %70 Success ratio</li>
-<li>D: &gt;= %60 Success ratio</li>
-<li>F: &lt; %60 Success ratio</li>
-</ul>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
