@@ -11823,7 +11823,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Import the visualization code</span>
@@ -21815,7 +21815,7 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li>The following decay functions yielded satisfactory results, after some parameter tuning. The models along with the optimal parameter, number of training trials and average simulation time on an intel core-i5 mobile processor is listed. The simulation is repeated 5 times for each model.</li>
+<li>The following decay functions yielded satisfactory results, after parameter tuning. The models along with the optimal parameter, number of training trials and average simulation time on an intel core-i5 mobile processor is listed. The simulation is repeated 5 times for each model.</li>
 </ul>
 <table>
 <thead><tr>
@@ -21907,11 +21907,28 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li>A policy is a set of rules that the agent follows to select an action, given its state. An optimal policy would define a set of state-action pairs that maximize the rewards received by the agent. </li>
-<li>The problem we are trying to address here is having an agent learn the US right of ways, so that it can achieve certain levels of safety and efficiency to drive a smartcab. A few examples of various situations that a smartcab would face, and the correct actions that it should take come in the following<br>
+<li>A policy is a set of rules that the agent follows to select an action, given its current state. </li>
+<li>An optimal policy would define a set of state-action pairs that maximize the total reward received by the agent. In other words, no other policy would result in a higher accumulated rewards than the optimal policy. </li>
+<li><p>Q-learning enables an agent to learn the optimal policy by way of <em>exploration</em> and <em>exploitation</em> as follows:</p>
+<ul>
+<li>All the state-action values are initialized with zero.</li>
+<li>The agent starts exploring the state space by taking random actions and assigning values to them.  </li>
+<li>Once some state-actions are met and values assigned, the agent would naturally follow actions with the highest, yet potentially suboptimal utility. To avoid getting trapped in a suboptimal policy, one would trade off <em>exploitation</em> of high-value states and <em>exploration</em> of unseen states using methods such as $\epsilon$-greedy or <em>softmax</em>: <ul>
+<li>$\epsilon$-Greedy: the agent chooses a random action with probability $\epsilon$ to <em>explore</em>, and a high-Q action with probability $1-\epsilon$ to <em>exploit</em>. Usually, $\epsilon$ has a time dependent form and decrease as the agent keeps learning. </li>
+<li><em>Softmax</em>: high-value state-actions are assigned with a higher probability according to
+\begin{equation}
+\frac{e^{\frac{Q(s,a)}{\tau}}}{\sum_a e^{\frac{Q(s,a)}{\tau}}}
+\end{equation}
+Where, $\tau>0$ is called temperature. A high value for $\tau$ gives nearly equal chance for all actions, whereas, smaller $\tau$ values rather prioritize high-Q actions.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>The problem we address in this project is, having an agent learn the US right of ways while following provided waypoints towards a destination. As a result, the agent must achieve certain levels of safety and reliability/efficiency to drive a smartcab. A few examples of various situations that the smartcab would face, and the correct actions that it must take come in the following<br>
 1- The waypoint is forward, the light is red: the optimal action would be staying idle.<br>
 2- The waypoint is left, light is green, and the oncoming traffic is none: the optimal action would be following the waypoint.<br>
-3- The waypoint is left, the light is green, however the oncoming traffic is 'forward': the optimal action would be idle.  </li>
+3- The waypoint is left, the light is green, however the oncoming traffic is 'forward': the optimal action would be idle.</p>
+</li>
 </ul>
 <p>Here is what the agent has learned after a successful, A+/A+, training:</p>
 <p>('forward', "{'light': 'red', 'oncoming': None, 'right': 'right', 'left': 'left'}")<br>
@@ -21939,7 +21956,7 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
  -- left : -19.54<br>
  -- right : 0.80<br>
  -- None : 0.00</p>
-<p>There are three different states shown for a forward waypoint in the case of red light, all of them promoting no action (idle). In the case of left waypoint and green light, when there is no oncomig traffic, the clear winner is the left turn, however, in presense of oncoming traffic it slightly weighs in favor of a right turn which is not the rational choice. This might be due to the absence of lane constraints, and also the large state space which would require larger training numbers to learn the right policy.</p>
+<p>There are three different states shown for a forward waypoint in the case of red light, all of them promoting no action (idle). In the case of left waypoint and green light, when there is no oncoming traffic, the clear winner is the left turn, however, in presence of oncoming traffic it slightly weighs in favor of a right turn which is not the rational choice. This might be due to the absence of lane constraints, and also the large state space which would require larger training numbers to learn the right policy.</p>
 
 </div>
 </div>
@@ -21972,11 +21989,12 @@ zKxE/g8qEmyvnkU/2AAAAABJRU5ErkJggg==
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li><p>The agent is trying to learn traffic rules, while maximizing it's reliability by following the waypoints. Inclusion of future rewards would mean that the future optimal actions of the agent would have an impact on its current Q-value. With regard to <strong>reliability</strong> this may make sense, because, if the agent choses to take optimal paths in its future actions, it may be able to compensate a wrong turn at current time. However, with regard to <strong>safety</strong>, future actions must not matter for rewarding or penalizing the current action of the agent. In other words, <strong>current violation of a traffic law can not be excused or discounted by the promiss of possible safe driving in future.</strong> This may justify setting the discount factor the future rewards to zero.</p>
+<li><p>The start and destination points are determined randomly for each training instance with the only constraint of them being at least 4 junctions apart. That is, the agent would face a different environment after each restart. Therefor, due to stochastic nature of the environment, future rewards for each state-action would not converge to a constant number.</p>
 </li>
-<li><p>With respect to the environment, the start and the destination of the agent is chosen randomly for each trial, meaning that the environment is time dependent, hence, following certain set of waypoints that yield high rewards for one trial, may not lead to the same result at a different trial, and would not be beneficial to learn reliability.</p>
+<li><p>From smartcab's point of view, the next state that the smartcab lands after taking an action, depends on the presence of oncoming traffic, and status of the traffic light, which are determined in an stochastic way.</p>
 </li>
 </ul>
+<p>Considering the aforementioned reasons, it would be commendable to only use an immediate reward for following the <em>Right-of-way</em> rules, rather than trying to back-propagate the effect of future optimal actions.</p>
 
 </div>
 </div>
