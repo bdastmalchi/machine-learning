@@ -49,6 +49,7 @@ class LearningAgent(Agent):
             #self.epsilon -= self.tolerance
             #self.epsilon -= self.epsilon *  self.tolerance
             #self.epsilon = 1 / t**2
+            self.epsilon = 1 / t**1
             #self.epsilon = 1 / t**0.8
             #self.epsilon = self.tolerance**t
             #self.epsilon = math.cos(self.tolerance * t)
@@ -57,7 +58,7 @@ class LearningAgent(Agent):
             # =============================
             #self.tolerance = 0.99
             #alpha=0.55
-            self.epsilon = self.tolerance**t
+            #self.epsilon = self.tolerance**t
             # =============================
             #self.tolerance = 0.01
             #alpha=0.55
@@ -99,8 +100,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
-        dd = self.Q[self.state]
-        maxQ = max(dd, key=dd.get)
+        maxQ = max(self.Q[state].values())
 
         return maxQ
 
@@ -141,8 +141,9 @@ class LearningAgent(Agent):
             if random.random() <= self.epsilon:
                 action = random.choice(self.valid_actions)
             else:
-                action = self.get_maxQ(self.state)
-
+                maxQ = self.get_maxQ(self.state)
+                # Tie breaker in case more than one actions with the same Q value
+                action = random.choice([k for k, v in self.Q[state].iteritems() if v == maxQ])
 
         return action
 
@@ -208,7 +209,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 2.0, log_metrics=True, optimized=True, display=True)
+    sim = Simulator(env, update_delay = 0.01, log_metrics=True, optimized=True, display=False)
 
     ##############
     # Run the simulator
